@@ -1,0 +1,16 @@
+{
+    "name": "role",
+    "table": "roles",
+    "crud": ["c", "r", "u", "d"],
+    "data": [{
+            "name": "name",
+            "mysql_data": "varchar(255)",
+            "datatype": "string"
+        }],
+    "roles": {
+        "read": ["admin"],
+        "update": ["admin"],
+        "write": ["admin"],
+        "delete": ["admin"]
+    }
+}

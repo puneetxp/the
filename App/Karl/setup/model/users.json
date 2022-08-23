@@ -1,0 +1,35 @@
+{
+    "name": "user",
+    "table": "users",
+    "crud": ["c", "r", "u"],
+    "data": [{
+            "name": "name",
+            "mysql_data": "varchar(255)",
+            "datatype": "string"
+        }, {
+            "name": "email",
+            "mysql_data": "varchar(255) UNIQUE",
+            "datatype": "string"
+        }, {
+            "name": "google_id",
+            "mysql_data": "varchar(255)",
+            "sql_attribute": "NULL",
+            "datatype": "string"
+        }, {
+            "name": "facebook_id",
+            "mysql_data": "varchar(255)",
+            "sql_attribute": "NULL",
+            "datatype": "string"
+        }, {
+            "name": "password",
+            "mysql_data": "varchar(255)",
+            "sql_attribute": "NULL",
+            "datatype": "string"
+        }],
+    "roles": {
+        "read": ["admin"],
+        "update": ["admin"],
+        "write": ["admin"],
+        "delete": ["-"]
+    }
+}

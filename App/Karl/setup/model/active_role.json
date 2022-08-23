@@ -1,0 +1,14 @@
+{
+    "name": "active_role",
+    "table": "active_roles",
+    "crud": ["c", "r", "u", "d"],
+    "default": ["updated_at"],
+    "data": [],
+    "relation": ["user", "role"],
+    "roles": {
+        "read": ["admin"],
+        "update": ["admin"],
+        "write": ["admin"],
+        "delete": ["admin"]
+    }
+}

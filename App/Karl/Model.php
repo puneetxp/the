@@ -8,7 +8,6 @@ use App\Dep\Back\{
 };
 
 abstract class Model {
-
 //items
    protected $items = '';
    protected $singular = false;
@@ -16,18 +15,24 @@ abstract class Model {
 //__construct
    public function __construct(
            protected $id = '',
-           protected $key = 'id'
+           protected $key = 'id',
+           protected $col = ['*']
    ) {
       
    }
 
 //DB_connect
    public function connect() {
-      return DB::inti($this->table, $this->fillable, $this->id, $this->key);
+      return DB::inti($this->table, $this->fillable, $this->id, $this->key, $this->col);
    }
 
    public function set_singular() {
       $this->singular = true;
+      return $this;
+   }
+
+   public function set_col($col) {
+      $this->col = $col;
       return $this;
    }
 
@@ -43,26 +48,23 @@ abstract class Model {
    }
 
 //where *
-   public static function where($id, $key) {
-      return (new static($id, $key))->_where();
+   public static function where($id, $key = "id", $col = ['*']) {
+      return (new static(id: $id, key: $key, col: $col))->_where();
    }
 
-   public function _where($col = ['*']) {
-      $this->items = $this->connect()->where($col)->many();
+   public function _where() {
+      $this->items = $this->connect()->where($this->col)->many();
       return $this;
    }
 
 //single
-   public static function find($id, $key = '') {
-      if ($key == '') {
-         return (new static($id))->set_singular()->get_item();
-      }
-      return (new static($id, $key))->set_singular()->get_item();
+   public static function find($id, $key = 'id', $col = ['*']) {
+      return (new static(id: $id, key: $key, col: $col))->set_singular()->get_item();
    }
 
    public function get_item() {
       $this->items = $this->connect()->find();
-      if ($this->items == [] || $this->items == null) {
+      if ($this->items == null) {
          return null;
       } else {
          return $this;
@@ -80,8 +82,8 @@ abstract class Model {
    }
 
 //update
-   public static function update($id, $data = '') {
-      return (new static($id))->_update($data);
+   public static function update($id, $key = 'id', $data = '') {
+      return (new static(id: $id, key: $key, col: ["*"]))->_update($data);
    }
 
    public function _update($data) {
@@ -110,6 +112,14 @@ abstract class Model {
       return $this->items;
    }
 
+   public function filter_items(array $col, array $filter = []) {
+      $this->items = array_intersect_key($this->items, array_flip($col));
+      foreach ($filter as $key => $value) {
+         $this->items[$key] = array_column($this->items[$key], $value);
+      }
+      return $this;
+   }
+
 //call realtionshi
 //Better for spa and fastest way
    public function wfast($data) {
@@ -125,6 +135,10 @@ abstract class Model {
       } else {
          $x[$data] = $this->relation($data)->array();
       }
+      if ($this->singular) {
+         $this->items = [...$this->items, ...$x];
+         return $this;
+      }
       $x[$this->name] = $this->items;
       $this->items = $x;
       return $this;
@@ -135,68 +149,50 @@ abstract class Model {
       if (is_array($data)) {
          foreach ($data as $item) {
             if (is_array($item)) {
-               $this->with_array($item);
+               $this->nested_relations($item);
             } else {
-               $this->with_string($item);
+               $this->no_nested_realtions($item);
             }
          }
       } else {
-         $this->with_string($data);
+         $this->no_nested_realtions($data);
       }
       return $this;
    }
 
-   public function with_string($data) {
-      $return = $this->relation($data)->array();
-      if ($this->singular) {
-         isset($this->relations[$data]['level']) ? $this->items[$data] = $return[0] : $this->items[$data] = $return;
-      } else {
-         isset($this->relations[$data]['level']) ? $this->filter_relation($data, $return) : $this->filter_relations($data, $return);
-      }
+   public function no_nested_realtions($data) {
+      $this->filter_relations($data, $this->relation($data)->array());
    }
 
-   public function with_array($data) {
+   public function nested_relations($data) {
       foreach ($data as $key => $value) {
-         $return = $this->relation($key)?->with($value)?->array();
-         if ($this->singular) {
-            isset($this->relations[$key]['level']) ? ($this->items[$key] = $return[0]) : ($this->items[$key] = $return);
-         } else {
-            isset($this->relations[$key]['level']) ? $this->filter_relation($key, $return) : $this->filter_relations($key, $return);
-         }
+         $this->filter_relations($key, $this->relation($key)?->with($value)?->array());
       }
-      return $this;
    }
 
    public function relation($data) {
       return call_user_func_array(
-              [$this->relations[$data]['callback'],
-                  'where'],
-              [($this->singular ? $this->items[$this->relations[$data]['name']] : array_column($this->items, $this->relations[$data]['name'])),
-                  $this->relations[$data]['key']]
+              [$this->relations[$data]['callback'], 'where'],
+              [($this->singular ? $this->items[$this->relations[$data]['name']] : array_column($this->items, $this->relations[$data]['name'])), $this->relations[$data]['key']]
       );
    }
 
-   public function filter_relation($model, $data) {
-      for (
-              $i = 0;
-              count($this->items) > $i;
-              ++$i
-      ) {
-         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
-                    return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
-                 })[0];
-      }
-   }
-
    public function filter_relations($model, $data) {
+      if ($this->singular) {
+         $this->items[$model] = array_filter($data, function ($item) use ($model) {
+            return $item[$this->relations[$model]['key']] == $this->items[$this->relations[$model]['name']];
+         });
+      }
       for (
               $i = 0;
               count($this->items) > $i;
               ++$i
       ) {
-         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
-            return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
-         });
+         isset($this->relations[$model]['level']) ? $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
+                            return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
+                         })[0] : $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
+                    return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
+                 });
       }
    }
 }

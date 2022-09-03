@@ -35,7 +35,7 @@ class DB extends \mysqli {
            private $_fillable = [],
            private $_table_id = '',
            private $_table_key = '',
-           private $_table_col = ['*'],
+           private $_table_col = '*',
            private $_user = DBUSER,
            private $_pass = DBPWD,
            private $_dbName = DBNAME,
@@ -145,7 +145,7 @@ class DB extends \mysqli {
 
    //delete
    public function delete($id, $key = 'id') {
-      if ($this->query("DELETE FROM $this->_table WHERE $key IN ('$mysql_id')")) {
+      if ($this->query("DELETE FROM $this->_table WHERE $key IN ('$id')")) {
          return ['Deleted' => $id];
       } else {
          $this->erro_cu();

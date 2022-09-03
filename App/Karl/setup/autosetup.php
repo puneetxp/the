@@ -89,7 +89,9 @@ foreach ($table as $item) {
    }
    preg_match_all($pattern_route, $router_mode_raw, $router_temp);
    if ($router_temp[0] != []) {
-      $route_app .= $router_temp[0][0];
+      foreach ($router_temp[0] as $item) {
+         $route_app .= $item;
+      }
    }
 }
 $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/Api.php'), 'TRUE')));
@@ -116,7 +118,9 @@ if ($router_mode_raw != '') {
    }
    preg_match_all($pattern_route, $router_mode_raw, $router_temp);
    if ($router_temp[0] != []) {
-      $route_app .= $router_temp[0][0];
+      foreach ($router_temp[0] as $item) {
+         $route_app .= $item;
+      }
    }
 }
 foreach ($route_use_array as $key => $value) {
@@ -132,8 +136,3 @@ $migration_sql .= 'INSERT INTO roles (name) VALUES ("' . implode('"),("', array_
 file_put_contents('../Migration.sql', ($migration_sql . ' ' . $migration_relation));
 fwrite($route, php_w($route_use_single . $route_use_multiple . $route_app . '$route->listen();'));
 file_put_contents('status.json', json_encode($json_set));
-//if ($controller_route == []) {
-//    fwrite($route, php_w($router_write . '$route->listen();'));
-//} else {
-//    fwrite($route, php_w('use App\Karl\Controller\{' . implode(',', $controller_route) . '}; ' . $router_write . '$route->listen();'));
-//}

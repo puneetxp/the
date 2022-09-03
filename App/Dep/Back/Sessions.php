@@ -17,7 +17,7 @@ class Sessions {
       if (isset($_SESSION['user_id'])) {
          return array_values(array_column(User::find($_SESSION['user_id'])->wfast([['active_role' => 'role']])->array()['role'], 'name'));
       }
-      return [""];
+      return [];
    }
 
    public static function update($id) {

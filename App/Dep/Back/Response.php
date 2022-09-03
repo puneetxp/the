@@ -9,28 +9,29 @@ namespace App\Dep\Back;
  */
 class Response {
 
-   public static function json($data) {
+   public static function json($data='') {
       header('Content-Type: application/json; charset=utf-8');
       return json_encode($data);
    }
 
-   public static function not_found() {
+   public static function not_found($data='') {
       http_response_code(404);
-      return;
+      return json_encode($data);
    }
 
-   public static function not_authorised() {
+   public static function not_authorised($data='') {
       http_response_code(403);
-      return;
+      return json_encode($data);
    }
 
-   public static function unprocessable() {
+   public static function unprocessable($data='') {
       http_response_code(422);
-      return;
+      return json_encode($data);
    }
-      public static function bad_req() {
+
+   public static function bad_req($data='') {
       http_response_code(400);
-      return;
+      return json_encode($data);
    }
 
 }

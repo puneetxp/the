@@ -29,7 +29,8 @@ Go to App/Karl/setup/model/ where is json you can create new json file according
 ```
 
 Then Run App/Karl/setup/autosetup.php
+
 That will create 
-Controller
-Routes
-Model
+Controller, 
+Routes, 
+Model, Also Interface in typesript for your front end

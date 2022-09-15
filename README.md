@@ -26,6 +26,7 @@ Go to App/Karl/setup/model/ where is json you can create new json file according
         "delete": ["-"]//roles allow to delete
     }
 }
+```
 
 Then Run App/Karl/setup/autosetup.php
 That will create 

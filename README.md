@@ -7,7 +7,7 @@ First Step
 
 Go to /App/Karl/setup/model/ where is json you can create new json file accordingly
 
-
+```yaml
 {
     "name": "user",//MODEL NAME
     "table": "users",//TABLE NAME

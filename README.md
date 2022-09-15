@@ -5,7 +5,7 @@ Roadmap to be decide.
 
 First Step 
 
-Go to /App/Karl/setup/model/ where is json you can create new json file accordingly
+Go to App/Karl/setup/model/ where is json you can create new json file accordingly
 
 ```yaml
 {
@@ -26,3 +26,9 @@ Go to /App/Karl/setup/model/ where is json you can create new json file accordin
         "delete": ["-"]//roles allow to delete
     }
 }
+
+Then Run App/Karl/setup/autosetup.php
+That will create 
+Controller
+Routes
+Model

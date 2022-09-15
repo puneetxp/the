@@ -15,7 +15,8 @@ Go to /App/Karl/setup/model/ where is json you can create new json file accordin
     "data": [{
             "name": "password",//name of database
             "mysql_data": "varchar(255)",//mysql database
-            "sql_attribute": "NULL",//mysql sql_attribute you can NOT NULL is defullt if there is no sql_attribute then it is NOT NULL
+            "sql_attribute": "NULL",//mysql sql_attribute 
+            //if there is no sql_attribute then it is NOT NULL so you can skip it
             "datatype": "string"//for interface file
         }],
     "roles": {

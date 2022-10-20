@@ -15,13 +15,9 @@ namespace App\Dep\Back;
 class Req {
 
    public static function only(array $array) {
-      $filtered = [];
-      foreach ($_POST as $k => $v) {
-         if (in_array($k, $array)) {
-            $filtered[$k] = $v;
-         }
-      }
-      return $filtered;
+      return array_filter($_POST,
+              fn($key) => in_array($key, $array),
+              ARRAY_FILTER_USE_KEY);
    }
 
    public static function one(string $one) {

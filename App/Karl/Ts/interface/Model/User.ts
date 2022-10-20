@@ -1,0 +1,1 @@
+export interface User{ name:string,email:string,phone:string,google_id:string | null,facebook_id:string | null,password:string | null,enable:number,id:number,created_at:Date,updated_at:Date}

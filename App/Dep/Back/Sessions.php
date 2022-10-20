@@ -21,11 +21,11 @@ class Sessions {
    }
 
    public static function update($id) {
-      return Session::update($id);
+   
    }
 
    public static function delete($id) {
-      return Session::delete($id);
+      
    }
 
 }

@@ -6,6 +6,11 @@
             "name": "name",
             "mysql_data": "varchar(255)",
             "datatype": "string"
+        }, { 
+            "name": "enable",
+            "mysql_data": "TINYINT",
+            "datatype": "number",
+            "sql_attribute": " DEFAULT 1 NOT NULL "
         }],
     "roles": {
         "read": ["admin"],

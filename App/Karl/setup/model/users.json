@@ -11,6 +11,10 @@
             "mysql_data": "varchar(255) UNIQUE",
             "datatype": "string"
         }, {
+            "name": "phone",
+            "mysql_data": "varchar(14) UNIQUE",
+            "datatype": "string"
+        }, {
             "name": "google_id",
             "mysql_data": "varchar(255)",
             "sql_attribute": "NULL",
@@ -25,6 +29,11 @@
             "mysql_data": "varchar(255)",
             "sql_attribute": "NULL",
             "datatype": "string"
+        }, { 
+            "name": "enable",
+            "mysql_data": "TINYINT",
+            "datatype": "number",
+            "sql_attribute": " DEFAULT 1 NOT NULL "
         }],
     "roles": {
         "read": ["admin"],

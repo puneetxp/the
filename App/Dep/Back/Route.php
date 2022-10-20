@@ -18,13 +18,14 @@ class Route {
            private $_routes = [
                "GET" => [],
                "POST" => [],
+               "PATCH" => [],
+               "DELETE" => [],
                "PUT" => [],
-               "DELETE" => []
            ],
            private $_trim = '/\^$',
            private $_uri = '',
            private $_method = '',
-           private $_match_route = '',
+           private $_match_route = [],
            private $_roles = []
    ) {
       $this->active_route_set();
@@ -79,6 +80,10 @@ class Route {
       $this->_routes['POST'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
    }
 
+   public function patch($uri, $function, $roles = [''], $value = []) {
+      $this->_routes['PATCH'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
+   }
+
    public function put($uri, $function, $roles = [''], $value = []) {
       $this->_routes['PUT'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
    }
@@ -96,7 +101,8 @@ class Route {
          Self::post($name, [$controller, 'store'], $permission['write']);
       }
       if (in_array('u', $crud)) {
-         Self::put($name . '/.+', [$controller, 'update'], $permission['update']);
+         Self::patch($name . '/.+', [$controller, 'update'], $permission['update']);
+         Self::put($name, [$controller, 'upsert'], $permission['update']);
       }
       if (in_array('d', $crud)) {
          Self::delete($name . '/.+', [$controller, 'delete'], $permission['delete']);

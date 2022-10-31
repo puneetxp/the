@@ -1,0 +1,1 @@
+export interface Product{ name:string,slug:string,enable:number,id:number,created_at:Date,updated_at:Date}

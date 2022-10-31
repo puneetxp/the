@@ -7,4 +7,5 @@ RewriteRule ^api/(.*)$ /api.php?uri=$1 [NC,L,QSA]
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /index.php?uri=$1 [NC,L,QSA]
+#RewriteRule ^(.*)$ /index.php?uri=$1 [NC,L,QSA]
+RewriteRule ^(.*)$ /index.php [NC,L,QSA]

@@ -1,7 +1,13 @@
 <?php
 
-define('DBUSER', 'root');
-define('DBPWD', '');
+define('DBUSER', 'username');
+define('DBPWD', 'password');
 define('DBHOST', 'localhost');
-define('DBNAME', 'appname');
-define('web', 'webname');
+define('DBNAME', 'demo');
+define('web', 'the.com');
+define('secure',false);
+define('httponly',true);
+define('same_site',"Strict");
+
+require_once __DIR__ . '/App/Dep/Back/start.php';
+require_once __DIR__ . '/vendor/autoload.php';

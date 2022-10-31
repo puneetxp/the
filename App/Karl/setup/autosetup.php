@@ -6,11 +6,13 @@ $pattern_use_only = '/use.*?\w;/';
 $pattern_use_multple = "/use (.*?){(.*?)};/";
 $route_use_single = '';
 $route_use_array = [];
-$route_use_array['App\Dep\Back\\']=["Route"];
+$route_use_array['App\Dep\Back\\'] = ["Route"];
 $route_use_multiple = '';
 $route_app = ' $route= new Route();';
 $json_set = json_decode(file_get_contents('status.json'), TRUE);
-
+if (!isset($json_set['fresh'])) {
+    $json_set['fresh'] = false;
+}
 foreach (glob("*.php") as $filename) {
     require_once $filename;
 }
@@ -44,7 +46,7 @@ $route = fopen($output_path . ucfirst('Web/') . 'api.php', 'w');
 $router_write = ' $route= new Route();';
 $controller_route = [];
 foreach ($table as $item) {
-    isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = false;
+    isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = true;
     $model = fopen($output_path . ucfirst('model/') . ucfirst($item['name']) . '.php', 'w');
     $model_write = model($item);
     fwrite($model, $model_write);
@@ -62,6 +64,12 @@ foreach ($table as $item) {
         $interface = fopen($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts', 'w');
         $interface_write = interface_set($item);
         fwrite($interface, $interface_write);
+        $vuestore = fopen($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $vuestore_write = Vue_StoreJs($item);
+        fwrite($vuestore, $vuestore_write);
+        $vueservice = fopen($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $vueservice_write = Vue_ServiceJs($item);
+        fwrite($vueservice, $vueservice_write);
         $servicets = fopen($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts', 'w');
         $servicets_write = servicets_set($item);
         fwrite($servicets, $servicets_write);
@@ -102,7 +110,7 @@ foreach ($table as $item) {
         }
     }
 }
-foreach (['Api.php'] as $api) {
+foreach (['Api.php', 'Auth.php'] as $api) {
     $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/' . $api), 'TRUE')));
     if ($router_mode_raw != '') {
         preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);

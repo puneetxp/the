@@ -1,0 +1,26 @@
+{
+    "name": "product",
+    "table": "products",
+    "crud": ["c", "r", "u", "d"],
+    "data": [{
+            "name": "name",
+            "mysql_data": "varchar(255)",
+            "datatype": "string"
+        }, { 
+            "name": "slug",
+            "mysql_data": "varchar(255)",
+            "datatype": "string",
+            "sql_attribute": " UNIQUE NOT NULL "
+        }, { 
+            "name": "enable",
+            "mysql_data": "TINYINT",
+            "datatype": "number",
+            "sql_attribute": " DEFAULT 1 NOT NULL "
+        }],
+    "roles": {
+        "read": [""],
+        "update": ["manager", "admin"],
+        "write": ["manager", "admin"],
+        "delete": ["admin"]
+    }
+}

@@ -7,11 +7,11 @@ use App\Dep\Back\Response;
 
 abstract class Model {
 
-//items
+    //items
     protected $items = [];
     protected $singular = false;
 
-//__construct
+    //__construct
     public function __construct(
             protected $id = '',
             protected $key = 'id',
@@ -20,7 +20,7 @@ abstract class Model {
         
     }
 
-//DB_connect
+    //DB_connect
     public function connect() {
         return DB::inti($this->table, $this->fillable, $this->id, $this->key, $this->col);
     }
@@ -35,8 +35,8 @@ abstract class Model {
         return $this;
     }
 
-//GET_data
-//mulitple
+    //GET_data
+    //mulitple
     public static function all() {
         return (new static('*'))->get_items();
     }
@@ -46,7 +46,7 @@ abstract class Model {
         return $this;
     }
 
-//where *
+    //where *
     public static function where($id, $key = "id", $col = ['*']) {
         return (new static(id: $id, key: $key, col: $col))->_where();
     }
@@ -56,7 +56,7 @@ abstract class Model {
         return $this;
     }
 
-//single
+    //single
     public static function find($id, $key = 'id', $col = ['*']) {
         return (new static(id: $id, key: $key, col: $col))->set_singular()->get_item();
     }
@@ -70,7 +70,7 @@ abstract class Model {
         }
     }
 
-//insert
+    //insert
     public function insert($data = '') {
         $this->items = $this->connect()->create($data);
         return $this;
@@ -80,7 +80,7 @@ abstract class Model {
         return (new static())->insert($data);
     }
 
-//update
+    //update
     public static function update($id, $key = 'id', $data = '') {
         return (new static(id: $id, key: $key, col: ["*"]))->_update($data);
     }
@@ -99,7 +99,7 @@ abstract class Model {
         return $this;
     }
 
-//delete
+    //delete
     public static function delete($id, $key = 'id') {
         return (new static($id, $key))->_where()?->_destroy();
     }
@@ -110,26 +110,18 @@ abstract class Model {
         return $this;
     }
 
-//default output
+    //default output
     public function __toString() {
         return Response::json($this->items);
     }
 
-//array output
+    //array output
     public function array() {
         return $this->items;
     }
 
-    public function filter_items(array $col, array $filter = []) {
-        $this->items = array_intersect_key($this->items, array_flip($col));
-        foreach ($filter as $key => $value) {
-            $this->items[$key] = array_column($this->items[$key], $value);
-        }
-        return $this;
-    }
-
-//call realtionshi
-//Better for spa and fastest way
+    //call realtionshi
+    //Better for spa and fastest way
     public function wfast($data, $single = []) {
         $x = [];
         if (is_array($data)) {
@@ -143,10 +135,10 @@ abstract class Model {
         } else {
             $x[$data] = $this->relation($data)->array();
         }
-//        if ($this->singular) {
-//            $this->items = [...$this->items, ...$x];
-//            return $this;
-//        }
+        //        if ($this->singular) {
+        //            $this->items = [...$this->items, ...$x];
+        //            return $this;
+        //        }
         $x[$this->name] = $this->items;
         $this->items = $x;
         foreach ($single as $key) {
@@ -155,7 +147,7 @@ abstract class Model {
         return $this;
     }
 
-//load with relationship with some filltering
+    //load with relationship with some filltering
     public function with($data) {
         if (is_array($data)) {
             foreach ($data as $item) {
@@ -226,57 +218,57 @@ abstract class Model {
         }
     }
 
-//don't work usage of more memory that it need.
-//load with relationship with some filltering
-//   public function with($data) {
-//      if (is_array($data)) {
-//         foreach ($data as $item) {
-//            if (is_array($item)) {
-//               $this->nested_relations($item);
-//            } else {
-//               $this->no_nested_realtions($item);
-//            }
-//         }
-//      } else {
-//         $this->no_nested_realtions($data);
-//      }
-//      return $this;
-//   }
-//
-//   public function no_nested_realtions($data) {
-//      $this->items[$data] = isset($this->relations[$data]['level']) ? $this->relation($data)->array() : $this->relation($data)->array();
-////      $this->filter_relations($data, $this->relation($data)->array());
-//   }
-//
-//   public function nested_relations($data) {
-//      foreach ($data as $key => $value) {
-//         $this->singular ?
-//                         $this->items[$data] = (isset($this->relations[$data]['level']) ? $this->relation($data)?->array() : $this->relation($data)?->array() ) : $this->filter_relations($key, $this->relation($key)?->with($value)?->array());
-//      }
-//   }
-//
-//   public function relation($data) {
-//      return call_user_func_array(
-//              [$this->relations[$data]['callback'], 'where'],
-//              [($this->singular ?
-//                  $this->items[$this->relations[$data]['name']] :
-//                  array_column($this->items, $this->relations[$data]['name'])), $this->relations[$data]['key']]
-//      );
-//   }
-//
-//   public function filter_relations($model, $data) {
-//      for (
-//              $i = 0;
-//              count($this->items) > $i;
-//              ++$i
-//      ) {
-//         isset($this->relations[$model]['level']) ?
-//                         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
-//                            return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
-//                         })[0] :
-//                         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
-//                    return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
-//                 });
-//      }
-//   }
+    //don't work usage of more memory that it need.
+    //load with relationship with some filltering
+    //   public function with($data) {
+    //      if (is_array($data)) {
+    //         foreach ($data as $item) {
+    //            if (is_array($item)) {
+    //               $this->nested_relations($item);
+    //            } else {
+    //               $this->no_nested_realtions($item);
+    //            }
+    //         }
+    //      } else {
+    //         $this->no_nested_realtions($data);
+    //      }
+    //      return $this;
+    //   }
+    //
+    //   public function no_nested_realtions($data) {
+    //      $this->items[$data] = isset($this->relations[$data]['level']) ? $this->relation($data)->array() : $this->relation($data)->array();
+    ////      $this->filter_relations($data, $this->relation($data)->array());
+    //   }
+    //
+    //   public function nested_relations($data) {
+    //      foreach ($data as $key => $value) {
+    //         $this->singular ?
+    //                         $this->items[$data] = (isset($this->relations[$data]['level']) ? $this->relation($data)?->array() : $this->relation($data)?->array() ) : $this->filter_relations($key, $this->relation($key)?->with($value)?->array());
+    //      }
+    //   }
+    //
+    //   public function relation($data) {
+    //      return call_user_func_array(
+    //              [$this->relations[$data]['callback'], 'where'],
+    //              [($this->singular ?
+    //                  $this->items[$this->relations[$data]['name']] :
+    //                  array_column($this->items, $this->relations[$data]['name'])), $this->relations[$data]['key']]
+    //      );
+    //   }
+    //
+    //   public function filter_relations($model, $data) {
+    //      for (
+    //              $i = 0;
+    //              count($this->items) > $i;
+    //              ++$i
+    //      ) {
+    //         isset($this->relations[$model]['level']) ?
+    //                         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
+    //                            return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
+    //                         })[0] :
+    //                         $this->items[$i][$model] = array_filter($data, function ($item) use ($i, $model) {
+    //                    return $item[$this->relations[$model]['key']] == $this->items[$i][$this->relations[$model]['name']];
+    //                 });
+    //      }
+    //   }
 }

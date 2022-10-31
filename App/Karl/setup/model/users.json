@@ -13,6 +13,7 @@
         }, {
             "name": "phone",
             "mysql_data": "varchar(14) UNIQUE",
+            "sql_attribute": "NULL",
             "datatype": "string"
         }, {
             "name": "google_id",

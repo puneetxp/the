@@ -15,13 +15,6 @@ use App\Dep\Back\{
 class Route {
 
     public function __construct(
-            private $_routes = [
-                "GET" => [],
-                "POST" => [],
-                "PATCH" => [],
-                "DELETE" => [],
-                "PUT" => [],
-            ],
             private $_trim = '/\^$',
             private $_uri = '',
             private $_method = '',
@@ -38,79 +31,75 @@ class Route {
         $this->_roles = Sessions::roles();
     }
 
-    public function listen() {
-        foreach ($this->_routes[$this->_method] as $route) {
-            $route_uri = $route['uri'];
-            if (preg_match("#^$route_uri$#", $this->_uri)) {
-                $this->_match_route = $route;
-                $this->match_permission();
-                return;
-            }
+    public function get($uri, $call, $roles = ['*']) {
+        return $this->method_action('GET', $uri, $call, $roles);
+    }
+
+    public function post($uri, $call, $roles = ['*']) {
+        return $this->method_action('POST', $uri, $call, $roles);
+    }
+
+    public function patch($uri, $call, $roles = ['*']) {
+        return $this->method_action('PATCH', $uri, $call, $roles);
+    }
+
+    public function put($uri, $call, $roles = ['*']) {
+        return $this->method_action('PUT', $uri, $call, $roles);
+    }
+
+    public function delete($uri, $call, $roles = ['*']) {
+        return $this->method_action('DELETE', $uri, $call, $roles);
+    }
+
+    public function method_action($method, $uri, $call, $roles = ['*']) {
+        if ($this->_method == "$method" && preg_match("#^" . trim($uri, $this->_trim) . "$#", $this->_uri)) {
+            $this->_match_route = ["uri" => $uri, "roles" => $roles, "call" => $call];
+            return $this->check_permission()?->run();
         }
-
-        return Response::not_found();
-    }
-
-    public function match_permission() {
-        if ($this->_match_route['roles'] === [''] || array_intersect($this->_match_route['roles'], $this->_roles)) {
-            $this->run_route();
-        } else {
-            return Response::not_authorised();
-        }
-        return;
-    }
-
-    public function run_route() {
-        $fakeUri = explode('/', $this->_match_route['uri']);
-        foreach ($fakeUri as $key => $value) {
-            if ($value == '.+') {
-                $this->_match_route['value'][] = $this->_realUri[$key];
-            }
-        }
-        echo call_user_func_array($this->_match_route['call'], $this->_match_route['value']);
-        return;
-    }
-
-    public function get($uri, $function, $roles = [''], $value = []) {
-        $this->_routes['GET'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
-    }
-
-    public function post($uri, $function, $roles = [''], $value = []) {
-        $this->_routes['POST'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
-    }
-
-    public function patch($uri, $function, $roles = [''], $value = []) {
-        $this->_routes['PATCH'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
-    }
-
-    public function put($uri, $function, $roles = [''], $value = []) {
-        $this->_routes['PUT'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
-    }
-
-    public function delete($uri, $function, $roles = [''], $value = []) {
-        $this->_routes['DELETE'][] = ["uri" => trim($uri, $this->_trim), "roles" => $roles, "call" => $function, 'value' => $value];
+        return $this;
     }
 
     public function crud($crud, $name, $permission, $controller) {
         if (in_array('r', $crud)) {
-            Self::get($name, [$controller, 'index'], $permission['read']);
-            Self::get($name . '/.+', [$controller, 'show'], $permission['read']);
+            $x = $this->get($name, [$controller, 'index'], $permission['read'])
+                    ?->get($name . '/.+', [$controller, 'show'], $permission['read']);
         }
         if (in_array('c', $crud)) {
-            Self::post($name, [$controller, 'store'], $permission['write']);
+            $x = $x?->post($name, [$controller, 'store'], $permission['write']);
         }
         if (in_array('u', $crud)) {
-            Self::patch($name . '/.+', [$controller, 'update'], $permission['update']);
-            Self::put($name, [$controller, 'upsert'], $permission['update']);
+            $x = $x?->patch($name . '/.+', [$controller, 'update'], $permission['update'])
+                    ?->put($name, [$controller, 'upsert'], $permission['update']);
         }
         if (in_array('d', $crud)) {
-            Self::delete($name . '/.+', [$controller, 'delete'], $permission['delete']);
+            $x = $x?->delete($name . '/.+', [$controller, 'delete'], $permission['delete']);
         }
+        return $x;
+    }
+
+    public function check_permission() {
+        if ($this->_match_route['roles'] === ['*'] || array_intersect($this->_match_route['roles'], $this->_roles)) {
+            return $this;
+        } else {
+            echo Response::not_authorised();
+            return null;
+        }
+    }
+
+    public function run() {
+        $fakeUri = explode('/', $this->_match_route['uri']);
+        $attributes = [];
+        foreach ($fakeUri as $key => $value) {
+            if ($value == '.+') {
+                $attributes[] = $this->_realUri[$key];
+            }
+        }
+        echo call_user_func_array($this->_match_route['call'], $attributes);
+        return null;
     }
 
     public function allroutes() {
         echo Response::json($this->_routes);
     }
 
-// end of Listen
 }

@@ -8,11 +8,9 @@ $route_use_single = '';
 $route_use_array = [];
 $route_use_array['App\Dep\Back\\'] = ["Route"];
 $route_use_multiple = '';
-$route_app = ' $route= new Route();';
+$route_app = ' (new Route())';
 $json_set = json_decode(file_get_contents('status.json'), TRUE);
-if (!isset($json_set['fresh'])) {
-    $json_set['fresh'] = false;
-}
+
 foreach (glob("*.php") as $filename) {
     require_once $filename;
 }
@@ -24,7 +22,7 @@ $table = [];
 $roles = [];
 foreach ($x as $item) {
     foreach ($item['roles'] as $key => $value) {
-        if ($value != ["-"]) {
+        if ($value != ["-"] || $value != ["*"]) {
             $roles = array_merge($value, $roles);
         }
     }
@@ -43,10 +41,38 @@ for ($i = 0; $i < count($table); ++$i) {
     }
 }
 $route = fopen($output_path . ucfirst('Web/') . 'api.php', 'w');
-$router_write = ' $route= new Route();';
 $controller_route = [];
+foreach (['Auth.php', 'Api.php'] as $api) {
+    $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/' . $api), 'TRUE')));
+    if ($router_mode_raw != '') {
+        preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);
+        if ($use_temp_single[0] != []) {
+            foreach ($use_temp_single as $item) {
+                $route_use_single .= $item;
+            }
+        }
+        preg_match_all($pattern_use_multple, $router_mode_raw, $use_temp_multiple, PREG_SET_ORDER);
+        if ($use_temp_multiple[0] != []) {
+            foreach ($use_temp_multiple as $item) {
+                if (isset($route_use_array[$item[1]])) {
+                    foreach (explode(',', $item[2]) as $controller_roter) {
+                        $route_use_array[$item[1]][] = $controller_roter;
+                    }
+                } else {
+                    $route_use_array[$item[1]] = array_values(explode(',', $item[2]));
+                }
+            }
+        }
+        preg_match_all($pattern_route, $router_mode_raw, $router_temp);
+        if ($router_temp[0] != []) {
+            foreach ($router_temp[0] as $item) {
+                $route_app .= "\n" . preg_replace('/(;(?!.*;))/', '', $item);
+            }
+        }
+    }
+}
 foreach ($table as $item) {
-    isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = true;
+    isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = false;
     $model = fopen($output_path . ucfirst('model/') . ucfirst($item['name']) . '.php', 'w');
     $model_write = model($item);
     fwrite($model, $model_write);
@@ -59,17 +85,10 @@ foreach ($table as $item) {
         $controller_route[] = ucfirst($item['name']) . 'Controller';
         $route_file = fopen($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php', 'w');
         $router_model = crud($item['name'], $item['roles'], $item['crud']);
-        $router_write .= $router_model;
         fwrite($route_file, php_wrapper("use App\Karl\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
         $interface = fopen($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts', 'w');
         $interface_write = interface_set($item);
         fwrite($interface, $interface_write);
-        $vuestore = fopen($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
-        $vuestore_write = Vue_StoreJs($item);
-        fwrite($vuestore, $vuestore_write);
-        $vueservice = fopen($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
-        $vueservice_write = Vue_ServiceJs($item);
-        fwrite($vueservice, $vueservice_write);
         $servicets = fopen($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts', 'w');
         $servicets_write = servicets_set($item);
         fwrite($servicets, $servicets_write);
@@ -106,36 +125,7 @@ foreach ($table as $item) {
     preg_match_all($pattern_route, $router_mode_raw, $router_temp);
     if ($router_temp[0] != []) {
         foreach ($router_temp[0] as $item) {
-            $route_app .= $item;
-        }
-    }
-}
-foreach (['Api.php', 'Auth.php'] as $api) {
-    $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/' . $api), 'TRUE')));
-    if ($router_mode_raw != '') {
-        preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);
-        if ($use_temp_single[0] != []) {
-            foreach ($use_temp_single as $item) {
-                $route_use_single .= $item;
-            }
-        }
-        preg_match_all($pattern_use_multple, $router_mode_raw, $use_temp_multiple, PREG_SET_ORDER);
-        if ($use_temp_multiple[0] != []) {
-            foreach ($use_temp_multiple as $item) {
-                if (isset($route_use_array[$item[1]])) {
-                    foreach (explode(',', $item[2]) as $controller_roter) {
-                        $route_use_array[$item[1]][] = $controller_roter;
-                    }
-                } else {
-                    $route_use_array[$item[1]] = array_values(explode(',', $item[2]));
-                }
-            }
-        }
-        preg_match_all($pattern_route, $router_mode_raw, $router_temp);
-        if ($router_temp[0] != []) {
-            foreach ($router_temp[0] as $item) {
-                $route_app .= $item;
-            }
+            $route_app .= "\n" . preg_replace('/(;(?!.*;))/', '', $item);
         }
     }
 }
@@ -150,5 +140,5 @@ foreach ($table as $item) {
 }
 $migration_sql .= 'INSERT INTO roles (name) VALUES ("' . implode('"),("', array_values(array_unique($roles))) . '");';
 file_put_contents('../Migration.sql', ($migration_sql . ' ' . $migration_relation));
-fwrite($route, php_w($route_use_single . $route_use_multiple . $route_app . '$route->listen();'));
+fwrite($route, str_replace('$route', '', php_w($route_use_single . $route_use_multiple . $route_app . "\n?->not_found();")));
 file_put_contents('status.json', json_encode($json_set));

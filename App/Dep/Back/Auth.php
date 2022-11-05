@@ -103,7 +103,7 @@ class Auth
             $auth['roles'] = Sessions::roles();
             return Response::json(array_intersect_key($auth, array_flip(["name", "email", "id", "roles"])));
         } else {
-            return Response::json(false);
+            return Response::not_authorised(false);
         }
     }
 

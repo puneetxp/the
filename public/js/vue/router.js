@@ -1,8 +1,8 @@
 
-import { createRouter, createWebHashHistory } from "/js/vue/vue-router.js";
+import { createRouter, createWebHistory } from "/js/vue/vue-router.js";
 import { auth, notauth } from "/js/vue/guard/auth.js";
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: [{
         path: '/login',
         component: () => import("/js/vue/components/pages/login.vue.js"),

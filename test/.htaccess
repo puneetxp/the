@@ -26,4 +26,4 @@ RewriteRule ^(.*) /vue.html [NC,L,QSA]
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ /the.php [NC,L,QSA]
+RewriteRule ^(.*)$ /the.php?uri=$1  [NC,L,QSA]

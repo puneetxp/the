@@ -89,6 +89,12 @@ foreach ($table as $item) {
         $interface = fopen($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts', 'w');
         $interface_write = interface_set($item);
         fwrite($interface, $interface_write);
+        $vuestore = fopen($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $vuestore_write = Vue_StoreJs($item);
+        fwrite($vuestore, $vuestore_write);
+        $vueservice = fopen($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $vueservice_write = Vue_ServiceJs($item);
+        fwrite($vueservice, $vueservice_write);
         $servicets = fopen($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts', 'w');
         $servicets_write = servicets_set($item);
         fwrite($servicets, $servicets_write);

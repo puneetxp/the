@@ -1,0 +1,1 @@
+export interface Category{ name:string,enable:number,id:number,created_at:Date,updated_at:Date,category_id:number}

@@ -1,2 +1,0 @@
-<?php use App\Karl\Controller\{ ProductController};$route?->crud(['c','r','u','d'], 'product',[ 'read'=>['*'],'write'=>['manager','admin'],'update'=>['manager','admin'],'delete'=>['admin']] , ProductController::class);
-?> 

@@ -1,0 +1,1 @@
+export interface Photo{ name:string,dir:string,alt:string | null,id:number,created_at:Date,updated_at:Date}

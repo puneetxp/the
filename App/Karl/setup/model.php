@@ -50,16 +50,20 @@ function model($table)
    }
    $fillable .= implode("','", $fillable_array);
    $fillable .= "']";
-   return php_w(
-      'namespace App\Karl\Model;' .
-         'use App\Karl\Model;'  . class_wrapper(
-            ucfirst($table['name'] . ' extends Model'),
-            'public $model = ' . json_encode(array_column($table['data'], 'name')) . ";" .
-               'public $name = "' . $table['name'] . '";' .
-               'public $nullable = ' . json_encode($nullable) . ';' .
-               'protected $table ="' . $table['table'] . '";' .
-               'protected $relations =' . ($relations == '' ? '""' : $relations) . ';' .
-               'protected $fillable =' . $fillable . ';'
-         )
-   );
+   return php_w('namespace App\Karl\Model;
+
+   use App\Karl\Model;
+   
+   class ' . ucfirst($table['name']) . ' extends Model {
+   
+       public $model = ' . json_encode(array_column($table['data'], 'name')) . ';
+       public $name = "' . $table['name'] . '";
+       public $nullable = ' . json_encode($nullable) . ';
+       protected $table = "' . $table['table'] . '";       
+       protected $relations = ' . ($relations == '' ? '""' : $relations) . ';
+       protected $fillable = ' . $fillable . ';
+   
+   }
+   
+   ');
 }

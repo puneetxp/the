@@ -1,0 +1,1 @@
+export interface Inventory_log{ number:number,id:number,created_at:Date,updated_at:Date,product_id:number}

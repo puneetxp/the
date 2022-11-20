@@ -22,13 +22,12 @@ $table = [];
 $roles = [];
 foreach ($x as $item) {
     foreach ($item['roles'] as $key => $value) {
-        if ($value != ["-"] || $value != ["*"]) {
-            $roles = array_merge($value, $roles);
-        }
+        $roles = array_merge($value, $roles);
     }
     $table[] = table_set($item, $x);
 }
 
+$roles = array_filter(array_unique($roles), fn ($role) => !($role == "*" || $role == "-"));
 for ($i = 0; $i < count($table); ++$i) {
     if (count($table[$i]['relations']) > 0) {
         foreach ($table[$i]['relations'] as $key => $items) {
@@ -40,7 +39,7 @@ for ($i = 0; $i < count($table); ++$i) {
         }
     }
 }
-$route = fopen($output_path . ucfirst('Web/') . 'api.php', 'w');
+$route = fopen_dir($output_path . ucfirst('Web/') . 'api.php');
 $controller_route = [];
 foreach (['Auth.php', 'Api.php'] as $api) {
     $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/' . $api), 'TRUE')));
@@ -73,39 +72,45 @@ foreach (['Auth.php', 'Api.php'] as $api) {
 }
 foreach ($table as $item) {
     isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = false;
-    $model = fopen($output_path . ucfirst('model/') . ucfirst($item['name']) . '.php', 'w');
+    $model = fopen_dir($output_path . ucfirst('model/') . ucfirst($item['name']) . '.php');
     $model_write = model($item);
     fwrite($model, $model_write);
     if ($json_set['table'][$item['name']] == false || $json_set['fresh'] == true) {
         $controller_write = controller($item);
         if ($item['controller'] == '') {
-            $controller = fopen($output_path . ucfirst('controller/') . ucfirst($item['name']) . 'Controller.php', 'w');
+            $controller = fopen_dir($output_path . ucfirst('controller/') . ucfirst($item['name']) . 'Controller.php');
             fwrite($controller, $controller_write);
         }
         $controller_route[] = ucfirst($item['name']) . 'Controller';
-        $route_file = fopen($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php', 'w');
+        $route_file = fopen_dir($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php');
         $router_model = crud($item['name'], $item['roles'], $item['crud']);
         fwrite($route_file, php_wrapper("use App\Karl\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
-        $interface = fopen($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts', 'w');
+        $interface = fopen_dir($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
         $interface_write = interface_set($item);
         fwrite($interface, $interface_write);
-        $vuestore = fopen($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $solidstore = fopen_dir($output_path . ucfirst('ts/') . 'Solid/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+        $solidstore_write = SolidTsStore($item);
+        fwrite($solidstore, $solidstore_write);
+        $solidservice = fopen_dir($output_path . ucfirst('ts/') . 'Solid/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+        $solidservice_write = SolidServicesTs($item);
+        fwrite($solidservice, $solidservice_write);
+        $vuestore = fopen_dir($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
         $vuestore_write = Vue_StoreJs($item);
         fwrite($vuestore, $vuestore_write);
-        $vueservice = fopen($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js', 'w');
+        $vueservice = fopen_dir($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
         $vueservice_write = Vue_ServiceJs($item);
         fwrite($vueservice, $vueservice_write);
-        $servicets = fopen($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts', 'w');
+        $servicets = fopen_dir($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts');
         $servicets_write = servicets_set($item);
         fwrite($servicets, $servicets_write);
-        $statesngxs = fopen($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('state/') . ucfirst($item['name']) . '.state.ts', 'w');
+        $statesngxs = fopen_dir($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('state/') . ucfirst($item['name']) . '.state.ts');
         $statesngxs_write = statengxs_set($item);
         fwrite($statesngxs, $statesngxs_write);
-        $actionngxs = fopen($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('action/') . ucfirst($item['name']) . '.action.ts', 'w');
+        $actionngxs = fopen_dir($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('action/') . ucfirst($item['name']) . '.action.ts');
         $actionngxs_write = actionngxs_set($item);
         fwrite($actionngxs, $actionngxs_write);
-        $mysql = fopen($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql', 'w');
-        $mysql_relation_file = fopen($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql', 'w');
+        $mysql = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
+        $mysql_relation_file = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql');
         $mysql_write = mysql_table($item);
         $mysql_relation = migrate_table($item);
         fwrite($mysql_relation_file, $mysql_relation);

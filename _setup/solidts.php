@@ -5,7 +5,7 @@ function SolidTsStore($table)
   $names = $table['table'];
   $dir = "../../";
   return "import { createStore, unwrap } from 'solid-js/store';
- import { $Name } from '" . $dir . "interface/Model/$Name';
+ import { $Name } from '" . $dir . "Interface/Model/$Name';
  interface " . $Name . "StateModel {
   $names :" . $Name . "[]
  }
@@ -49,7 +49,7 @@ function SolidServicesTs($table)
   $Name = ucfirst($table['name']);
   $name = $table['name'];
   $dir = "../../";
-  return "import { " . $Name . " } from '" . $dir . "interface/Model/" . $Name . "';
+  return "import { " . $Name . " } from '" . $dir . "Interface/Model/" . $Name . "';
   import { " . $Name . "Store } from '" . $dir . "Store/Model/" . $Name . "';
   const url = '/api/" . $name . "/';
   class " . $Name . "Service {

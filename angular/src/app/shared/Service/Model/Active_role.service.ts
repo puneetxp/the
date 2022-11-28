@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
 import { AddActive_role, DeleteActive_role, EditActive_role, SetActive_role ,UpsertActive_role } from '../../Ngxs/Action/Active_role.action';
-import { Active_role } from '../../interface/Model/Active_role';
+import { Active_role } from '../../Interface/Model/Active_role';
 import { Active_roleStateModel } from '../../Ngxs/State/Active_role.state';
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class Active_roleService {
   get(slug: string): Observable<Active_role> {
     return this.http.get<Active_role>(this.url + slug);
   }
-  getState(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'id'): Observable<Active_role[]> {
+  getState(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'user_id'): Observable<Active_role[]> {
     return this.active_role$.pipe(map(i => { return i.active_roles.filter(a => a[key] == id) }));
   }
   all(): void {
@@ -27,7 +27,7 @@ export class Active_roleService {
   allState() : Observable<Active_role[]>{
     return this.active_role$.pipe(map(i => { return i.active_roles }));
   }
-  find(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'id'): Observable<Active_role | undefined> {
+  find(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'user_id'): Observable<Active_role | undefined> {
     return this.active_role$.pipe(map(i => { return i.active_roles.find(a => a[key] == id) }));
   }
   update(_update: any) {

@@ -1,4 +1,4 @@
-import { Active_role } from '../../interface/Model/Active_role';
+import { Active_role } from '../../Interface/Model/Active_role';
   import { Active_roleStore } from '../../Store/Model/Active_role';
   const url = '/api/active_role/';
   class Active_roleService {

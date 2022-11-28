@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
 import { AddRole, DeleteRole, EditRole, SetRole ,UpsertRole } from '../../Ngxs/Action/Role.action';
-import { Role } from '../../interface/Model/Role';
+import { Role } from '../../Interface/Model/Role';
 import { RoleStateModel } from '../../Ngxs/State/Role.state';
 @Injectable({
   providedIn: 'root'

@@ -1,5 +1,5 @@
 import { createStore, unwrap } from 'solid-js/store';
- import { Role } from '../../interface/Model/Role';
+ import { Role } from '../../Interface/Model/Role';
  interface RoleStateModel {
   roles :Role[]
  }

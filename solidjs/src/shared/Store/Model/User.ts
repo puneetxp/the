@@ -1,5 +1,5 @@
 import { createStore, unwrap } from 'solid-js/store';
- import { User } from '../../interface/Model/User';
+ import { User } from '../../Interface/Model/User';
  interface UserStateModel {
   users :User[]
  }

@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
 import { Add$Name, Delete$Name, Edit$Name, Set$Name ,Upsert$Name } from '$dir"."Ngxs/Action/$Name.action';
-import { $Name } from '$dir"."interface/Model/$Name';
+import { $Name } from '$dir"."Interface/Model/$Name';
 import { $Name" . "StateModel } from '$dir"."Ngxs/State/$Name.state';
 @Injectable({
   providedIn: 'root'

@@ -1,4 +1,4 @@
-import { User } from '../../interface/Model/User';
+import { User } from '../../Interface/Model/User';
   import { UserStore } from '../../Store/Model/User';
   const url = '/api/user/';
   class UserService {

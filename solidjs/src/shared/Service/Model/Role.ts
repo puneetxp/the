@@ -1,4 +1,4 @@
-import { Role } from '../../interface/Model/Role';
+import { Role } from '../../Interface/Model/Role';
   import { RoleStore } from '../../Store/Model/Role';
   const url = '/api/role/';
   class RoleService {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
 import { AddUser, DeleteUser, EditUser, SetUser ,UpsertUser } from '../../Ngxs/Action/User.action';
-import { User } from '../../interface/Model/User';
+import { User } from '../../Interface/Model/User';
 import { UserStateModel } from '../../Ngxs/State/User.state';
 @Injectable({
   providedIn: 'root'

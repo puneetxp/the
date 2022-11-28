@@ -1,5 +1,5 @@
 import { createStore, unwrap } from 'solid-js/store';
- import { Active_role } from '../../interface/Model/Active_role';
+ import { Active_role } from '../../Interface/Model/Active_role';
  interface Active_roleStateModel {
   active_roles :Active_role[]
  }

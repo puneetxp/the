@@ -1,1 +1,1 @@
-{"fresh":true,"table":{"active_role":true,"product":true,"role":true,"user":true}}
+{"fresh":true,"model":true,"controller":true,"mysql":true,"interface":true,"front-end":{"angular":true,"vuejs":true,"solidjs":true},"back-end":{"php":true,"deno":true,"go":true,"rust":true},"table":{"active_role":true,"product":true,"role":true,"user":true}}

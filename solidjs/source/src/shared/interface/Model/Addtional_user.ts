@@ -1,1 +1,0 @@
-export interface Addtional_user{ `limit`:number,enable:number,id:number,created_at:Date,updated_at:Date}

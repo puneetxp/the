@@ -1,6 +1,6 @@
 <?php
 
-use App\Dependencies\{Route};
+use App\TheDep\{Route};
 use App\Front\Controller\Page;
 
 $route = new Route();

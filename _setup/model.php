@@ -50,9 +50,9 @@ function model($table)
    }
    $fillable .= implode("','", $fillable_array);
    $fillable .= "']";
-   return php_w('namespace App\Karl\Model;
+   return php_w('namespace App\The\Model;
 
-use App\Dependencies\Model;
+use App\TheDep\Model;
 
 class ' . ucfirst($table['name']) . ' extends Model {
 

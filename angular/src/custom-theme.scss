@@ -25,7 +25,7 @@ $angular-theme: mat.define-light-theme((
     primary: $angular-primary,
     accent: $angular-accent,
     warn: $angular-warn,
-  )
+  ) 
 ));
 
 // Include theme styles for core and each component used in your app.

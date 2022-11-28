@@ -1,9 +1,9 @@
 <?php
 
 function controller($table){
-  return php_w('namespace App\Karl\Controller;
+  return php_w('namespace App\The\Controller;
 
-use App\Karl\Model\{
+use App\The\Model\{
   ' . ucfirst($table['name']) . '
 };
 

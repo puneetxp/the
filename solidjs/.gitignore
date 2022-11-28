@@ -1,2 +1,4 @@
 assets
 ssl
+node_modules
+dist

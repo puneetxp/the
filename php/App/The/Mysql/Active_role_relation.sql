@@ -1,0 +1,1 @@
+ALTER TABLE active_roles ADD KEY active_role_user_id_foreign (`user_id`), ADD KEY active_role_role_id_foreign (`role_id`);ALTER TABLE active_roles ADD CONSTRAINT active_role_user_id_foreign  FOREIGN KEY  (`user_id`) REFERENCES users (`id`), ADD CONSTRAINT active_role_role_id_foreign  FOREIGN KEY  (`role_id`) REFERENCES roles (`id`);

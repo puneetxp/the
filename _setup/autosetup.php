@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../../env.php';
+require_once '../php/env.php';
 $pattern_route = '/\$route.*?;/';
 $pattern_use_only = '/use.*?\w;/';
 $pattern_use_multple = "/use (.*?){(.*?)};/";
@@ -22,7 +22,9 @@ $table = [];
 $roles = [];
 foreach ($x as $item) {
     foreach ($item['roles'] as $key => $value) {
-        $roles = array_merge($value, $roles);
+        if ($value != ["-"] || $value != ["*"]) {
+            $roles = array_merge($value, $roles);
+        }
     }
     $table[] = table_set($item, $x);
 }
@@ -72,49 +74,76 @@ foreach (['Auth.php', 'Api.php'] as $api) {
 }
 foreach ($table as $item) {
     isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = false;
+    //php
     $model = fopen_dir($output_path . ucfirst('model/') . ucfirst($item['name']) . '.php');
     $model_write = model($item);
     fwrite($model, $model_write);
+    $controller_write = controller($item);
+    if ($item['controller'] == '') {
+        $controller = fopen_dir($output_path . ucfirst('controller/') . ucfirst($item['name']) . 'Controller.php');
+        fwrite($controller, $controller_write);
+    }
+    $mysql_write = mysql_table($item);
+    $mysql_relation = migrate_table($item);
+    $controller_route[] = ucfirst($item['name']) . 'Controller';
+    $route_file = fopen_dir($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php');
+    $router_model = crud($item['name'], $item['roles'], $item['crud']);
+    fwrite($route_file, php_wrapper("use App\The\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
+    $mysql = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
+    $mysql_relation_file = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql');
+    fwrite($mysql_relation_file, $mysql_relation);
+    fwrite($mysql, $mysql_write);
+    //demo
+    $vuedjs = '../vuejs/src/shared/';
+    $Interface = fopen_dir($vuedjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+    $Interface_write = Interface_set($item);
+    fwrite($Interface, $Interface_write);
+    $vuestore = fopen_dir($vuedjs . 'Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
+    $vuestore_write = Vue_StoreJs($item);
+    fwrite($vuestore, $vuestore_write);
+    $vueservice = fopen_dir($vuedjs . 'Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
+    $vueservice_write = Vue_ServiceJs($item);
+    fwrite($vueservice, $vueservice_write);
+    //
     if ($json_set['table'][$item['name']] == false || $json_set['fresh'] == true) {
-        $controller_write = controller($item);
-        if ($item['controller'] == '') {
-            $controller = fopen_dir($output_path . ucfirst('controller/') . ucfirst($item['name']) . 'Controller.php');
-            fwrite($controller, $controller_write);
+        if (in_array('angular', $json_set['front-end'])) {
+            $angular_path = '../angular/src/app/shared/';
+            $servicets = fopen_dir($angular_path  . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts');
+            $servicets_write = servicets_set($item);
+            fwrite($servicets, $servicets_write);
+            $statesngxs = fopen_dir($angular_path  . ucfirst('ngxs/') . ucfirst('state/') . ucfirst($item['name']) . '.state.ts');
+            $statesngxs_write = statengxs_set($item);
+            fwrite($statesngxs, $statesngxs_write);
+            $actionngxs = fopen_dir($angular_path . ucfirst('ngxs/') . ucfirst('action/') . ucfirst($item['name']) . '.action.ts');
+            $actionngxs_write = actionngxs_set($item);
+            fwrite($actionngxs, $actionngxs_write);
+            $Interface = fopen_dir($angular_path . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+            $Interface_write = Interface_set($item);
+            fwrite($Interface, $Interface_write);
         }
-        $controller_route[] = ucfirst($item['name']) . 'Controller';
-        $route_file = fopen_dir($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php');
-        $router_model = crud($item['name'], $item['roles'], $item['crud']);
-        fwrite($route_file, php_wrapper("use App\Karl\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
-        $interface = fopen_dir($output_path . ucfirst('ts/') . 'interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-        $interface_write = interface_set($item);
-        fwrite($interface, $interface_write);
-        $solidstore = fopen_dir($output_path . ucfirst('ts/') . 'Solid/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-        $solidstore_write = SolidTsStore($item);
-        fwrite($solidstore, $solidstore_write);
-        $solidservice = fopen_dir($output_path . ucfirst('ts/') . 'Solid/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-        $solidservice_write = SolidServicesTs($item);
-        fwrite($solidservice, $solidservice_write);
-        $vuestore = fopen_dir($output_path . ucfirst('js/') . 'Vue/Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
-        $vuestore_write = Vue_StoreJs($item);
-        fwrite($vuestore, $vuestore_write);
-        $vueservice = fopen_dir($output_path . ucfirst('js/') . 'Vue/Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
-        $vueservice_write = Vue_ServiceJs($item);
-        fwrite($vueservice, $vueservice_write);
-        $servicets = fopen_dir($output_path . ucfirst('ts/') . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts');
-        $servicets_write = servicets_set($item);
-        fwrite($servicets, $servicets_write);
-        $statesngxs = fopen_dir($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('state/') . ucfirst($item['name']) . '.state.ts');
-        $statesngxs_write = statengxs_set($item);
-        fwrite($statesngxs, $statesngxs_write);
-        $actionngxs = fopen_dir($output_path . ucfirst('ts/') . ucfirst('ngxs/') . ucfirst('action/') . ucfirst($item['name']) . '.action.ts');
-        $actionngxs_write = actionngxs_set($item);
-        fwrite($actionngxs, $actionngxs_write);
-        $mysql = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
-        $mysql_relation_file = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql');
-        $mysql_write = mysql_table($item);
-        $mysql_relation = migrate_table($item);
-        fwrite($mysql_relation_file, $mysql_relation);
-        fwrite($mysql, $mysql_write);
+        if (in_array('vuets', $json_set['front-end'])) {
+            $vuedjs = '../vuets/src/shared/';
+            $Interface = fopen_dir($vuedjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+            $Interface_write = Interface_set($item);
+            fwrite($Interface, $Interface_write);
+            $vuestore = fopen_dir($vuedjs . 'Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
+            $vuestore_write = Vue_StoreJs($item);
+            fwrite($vuestore, $vuestore_write);
+            $vueservice = fopen_dir($vuedjs . 'Service/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
+            $vueservice_write = Vue_ServiceJs($item);
+            fwrite($vueservice, $vueservice_write);
+        }
+        if (in_array('soildjs', $json_set['front-end'])) {
+            $solidjs = '../solidjs/src/shared/';
+            $Interface = fopen_dir($solidjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+            $Interface_write = Interface_set($item);
+            $solidstore = fopen_dir($solidjs . 'Store/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+            $solidstore_write = SolidTsStore($item);
+            fwrite($solidstore, $solidstore_write);
+            $solidservice = fopen_dir($solidjs  . 'Service/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
+            $solidservice_write = SolidServicesTs($item);
+            fwrite($solidservice, $solidservice_write);
+        }
     }
     $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php', 'TRUE')));
     preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);

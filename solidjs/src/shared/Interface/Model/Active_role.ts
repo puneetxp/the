@@ -1,0 +1,1 @@
+export interface Active_role{ updated_at:Date,user_id:number,role_id:number}

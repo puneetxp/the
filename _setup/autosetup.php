@@ -93,7 +93,7 @@ foreach ($table as $item) {
     $mysql_relation_file = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql');
     fwrite($mysql_relation_file, $mysql_relation);
     fwrite($mysql, $mysql_write);
-    //demo
+    //demo vue with cdn
     $vuedjs = '../vuejs/src/shared/';
     $Interface = fopen_dir($vuedjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
     $Interface_write = Interface_set($item);
@@ -106,6 +106,7 @@ foreach ($table as $item) {
     fwrite($vueservice, $vueservice_write);
     //
     if ($json_set['table'][$item['name']] == false || $json_set['fresh'] == true) {
+        $Interface_write = Interface_set($item);
         if (in_array('angular', $json_set['front-end'])) {
             $angular_path = '../angular/src/app/shared/';
             $servicets = fopen_dir($angular_path  . ucfirst('service/') . ucfirst('model/') . ucfirst($item['name']) . '.service.ts');
@@ -118,13 +119,11 @@ foreach ($table as $item) {
             $actionngxs_write = actionngxs_set($item);
             fwrite($actionngxs, $actionngxs_write);
             $Interface = fopen_dir($angular_path . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-            $Interface_write = Interface_set($item);
             fwrite($Interface, $Interface_write);
         }
         if (in_array('vuets', $json_set['front-end'])) {
             $vuedjs = '../vuets/src/shared/';
             $Interface = fopen_dir($vuedjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-            $Interface_write = Interface_set($item);
             fwrite($Interface, $Interface_write);
             $vuestore = fopen_dir($vuedjs . 'Store/' . ucfirst('model/') . ucfirst($item['name']) . '.js');
             $vuestore_write = Vue_StoreJs($item);
@@ -136,7 +135,7 @@ foreach ($table as $item) {
         if (in_array('soildjs', $json_set['front-end'])) {
             $solidjs = '../solidjs/src/shared/';
             $Interface = fopen_dir($solidjs . 'Interface/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
-            $Interface_write = Interface_set($item);
+            fwrite($Interface, $Interface_write);
             $solidstore = fopen_dir($solidjs . 'Store/' . ucfirst('model/') . ucfirst($item['name']) . '.ts');
             $solidstore_write = SolidTsStore($item);
             fwrite($solidstore, $solidstore_write);

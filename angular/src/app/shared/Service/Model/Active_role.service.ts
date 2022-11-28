@@ -18,7 +18,7 @@ export class Active_roleService {
   get(slug: string): Observable<Active_role> {
     return this.http.get<Active_role>(this.url + slug);
   }
-  getState(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'user_id'): Observable<Active_role[]> {
+  getState(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'id'): Observable<Active_role[]> {
     return this.active_role$.pipe(map(i => { return i.active_roles.filter(a => a[key] == id) }));
   }
   all(): void {
@@ -27,7 +27,7 @@ export class Active_roleService {
   allState() : Observable<Active_role[]>{
     return this.active_role$.pipe(map(i => { return i.active_roles }));
   }
-  find(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'user_id'): Observable<Active_role | undefined> {
+  find(id: number | string, key: 'updated_at' | 'user_id' | 'role_id' = 'id'): Observable<Active_role | undefined> {
     return this.active_role$.pipe(map(i => { return i.active_roles.find(a => a[key] == id) }));
   }
   update(_update: any) {

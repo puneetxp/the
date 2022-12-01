@@ -89,8 +89,8 @@ foreach ($table as $item) {
     $route_file = fopen_dir($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php');
     $router_model = crud($item['name'], $item['roles'], $item['crud']);
     fwrite($route_file, php_wrapper("use App\The\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
-    $mysql = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
-    $mysql_relation_file = fopen_dir($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql');
+    $mysql = fopen_dir("../database/" . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
+    $mysql_relation_file = fopen_dir("../database/" . ucfirst('mysql/') . ucfirst('relations/') . ucfirst($item['name']) . '_relation.sql');
     fwrite($mysql_relation_file, $mysql_relation);
     fwrite($mysql, $mysql_write);
     //demo vue with cdn
@@ -174,10 +174,10 @@ foreach ($route_use_array as $key => $value) {
 $migration_sql = '';
 $migration_relation = '';
 foreach ($table as $item) {
-    $migration_sql .= file_get_contents($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '.sql', 'TRUE');
-    $migration_relation .= file_get_contents($output_path . ucfirst('mysql/') . ucfirst($item['name']) . '_relation.sql', 'TRUE');
+    $migration_sql .= file_get_contents("../database/" . ucfirst('mysql/') . ucfirst($item['name']) . '.sql', 'TRUE');
+    $migration_relation .= file_get_contents("../database/" . ucfirst('mysql/') . ucfirst('relations/') . ucfirst($item['name']) . '_relation.sql', 'TRUE');
 }
 $migration_sql .= 'INSERT INTO roles (name) VALUES ("' . implode('"),("', array_values(array_unique($roles))) . '");';
-file_put_contents('../Migration.sql', ($migration_sql . ' ' . $migration_relation));
+file_put_contents('../database/Migration.sql', ($migration_sql . ' ' . $migration_relation));
 fwrite($route, str_replace('$route', '', php_w($route_use_single . $route_use_multiple . $route_app . "\n?->not_found();")));
 file_put_contents('status.json', json_encode($json_set));

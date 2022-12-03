@@ -11,3 +11,9 @@ export const FormFetch = (event: Event) => {
   });
  }
 }
+export const dq = (query) => {
+ return document.querySelector(query);
+}
+export const dqa = (query) => {
+ return document.querySelectorAll(query);
+}

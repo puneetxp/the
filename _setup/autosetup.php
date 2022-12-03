@@ -6,7 +6,7 @@ $pattern_use_only = '/use.*?\w;/';
 $pattern_use_multple = "/use (.*?){(.*?)};/";
 $route_use_single = '';
 $route_use_array = [];
-$route_use_array['App\Dep\Back\\'] = ["Route"];
+$route_use_array['The\\'] = ["Route"];
 $route_use_multiple = '';
 $route_app = ' (new Route())';
 $json_set = json_decode(file_get_contents('status.json'), TRUE);
@@ -41,37 +41,7 @@ for ($i = 0; $i < count($table); ++$i) {
         }
     }
 }
-$route = fopen_dir($output_path . ucfirst('Web/') . 'api.php');
 $controller_route = [];
-foreach (['Auth.php', 'Api.php'] as $api) {
-    $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/' . $api), 'TRUE')));
-    if ($router_mode_raw != '') {
-        preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);
-        if ($use_temp_single[0] != []) {
-            foreach ($use_temp_single as $item) {
-                $route_use_single .= $item;
-            }
-        }
-        preg_match_all($pattern_use_multple, $router_mode_raw, $use_temp_multiple, PREG_SET_ORDER);
-        if ($use_temp_multiple[0] != []) {
-            foreach ($use_temp_multiple as $item) {
-                if (isset($route_use_array[$item[1]])) {
-                    foreach (explode(',', $item[2]) as $controller_roter) {
-                        $route_use_array[$item[1]][] = $controller_roter;
-                    }
-                } else {
-                    $route_use_array[$item[1]] = array_values(explode(',', $item[2]));
-                }
-            }
-        }
-        preg_match_all($pattern_route, $router_mode_raw, $router_temp);
-        if ($router_temp[0] != []) {
-            foreach ($router_temp[0] as $item) {
-                $route_app .= "\n" . preg_replace('/(;(?!.*;))/', '', $item);
-            }
-        }
-    }
-}
 foreach ($table as $item) {
     isset($json_set['table'][$item['name']]) ? '' : $json_set['table'][$item['name']] = false;
     //php
@@ -86,9 +56,9 @@ foreach ($table as $item) {
     $mysql_write = mysql_table($item);
     $mysql_relation = migrate_table($item);
     $controller_route[] = ucfirst($item['name']) . 'Controller';
-    $route_file = fopen_dir($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php');
+    $route_file = fopen_dir($output_path . '../Route/Api/Routes_crud/' . ucfirst($item['name']) . '.php');
     $router_model = crud($item['name'], $item['roles'], $item['crud']);
-    fwrite($route_file, php_wrapper("use App\The\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
+    fwrite($route_file, php_wrapper("use App\Controller\{ " . ucfirst($item['name']) . "Controller};" . $router_model));
     $mysql = fopen_dir("../database/" . ucfirst('mysql/') . ucfirst($item['name']) . '.sql');
     $mysql_relation_file = fopen_dir("../database/" . ucfirst('mysql/') . ucfirst('relations/') . ucfirst($item['name']) . '_relation.sql');
     fwrite($mysql_relation_file, $mysql_relation);
@@ -144,29 +114,6 @@ foreach ($table as $item) {
             fwrite($solidservice, $solidservice_write);
         }
     }
-    $router_mode_raw = str_replace("{ ", "{", str_replace(["<?php", "?>", "\n", "\r\n", "\r", "\t", "    "], "", file_get_contents($output_path . ucfirst('Route/Routes_crud/') . ucfirst($item['name']) . '.php', 'TRUE')));
-    preg_match_all($pattern_use_only, $router_mode_raw, $use_temp_single);
-    if ($use_temp_single[0] != []) {
-        foreach ($use_temp_single as $item) {
-            $route_use_single .= $item;
-        }
-    }
-    preg_match_all($pattern_use_multple, $router_mode_raw, $use_temp_multiple, PREG_SET_ORDER);
-    if ($use_temp_multiple[0] != []) {
-        foreach ($use_temp_multiple as $item) {
-            if (isset($route_use_array[$item[1]])) {
-                $route_use_array[$item[1]] = [...$route_use_array[$item[1]], ...array_values(explode(',', $item[2]))];
-            } else {
-                $route_use_array[$item[1]] = array_values(explode(',', $item[2]));
-            }
-        }
-    }
-    preg_match_all($pattern_route, $router_mode_raw, $router_temp);
-    if ($router_temp[0] != []) {
-        foreach ($router_temp[0] as $item) {
-            $route_app .= "\n" . preg_replace('/(;(?!.*;))/', '', $item);
-        }
-    }
 }
 foreach ($route_use_array as $key => $value) {
     $route_use_multiple .= "use $key{" . implode(',', array_unique($value)) . "}; ";
@@ -179,5 +126,6 @@ foreach ($table as $item) {
 }
 $migration_sql .= 'INSERT INTO roles (name) VALUES ("' . implode('"),("', array_values(array_unique($roles))) . '");';
 file_put_contents('../database/Migration.sql', ($migration_sql . ' ' . $migration_relation));
-fwrite($route, str_replace('$route', '', php_w($route_use_single . $route_use_multiple . $route_app . "\n?->not_found();")));
+route_php_compile('../php/Route/Api/','../php/Route/Api.php');
+route_php_compile('../php/Route/Web/','../php/Route/Web.php');
 file_put_contents('status.json', json_encode($json_set));

@@ -30,7 +30,7 @@ function default_att($item)
 }
 
 $route_default = '/api/';
-$output_path = '../php/App/The/';
+$output_path = '../php/App/';
 
 function table_set($item, $x)
 {

@@ -1,6 +1,6 @@
 <?php
 function Vue_ServiceJs($table){
-return 'import { use'.ucfirst($table["name"]).'Store } from "/js/vue/Store/Model/'.ucfirst($table["name"]).'.js";
+return 'import { use'.ucfirst($table["name"]).'Store } from "/src/Store/Model/'.ucfirst($table["name"]).'.js";
 
 const link = "/api/'.$table["name"].'"
 function all() {
@@ -46,7 +46,7 @@ function del(id) {
 export default { all, create, update, del, upsert };';
 }
 function Vue_StoreJs($table){
-return 'import { defineStore, acceptHMRUpdate } from "/js/vue/pinia.js";
+return 'import { defineStore, acceptHMRUpdate } from "/cdn/js/pinia.js";
 export const use'.ucfirst($table["name"]).'Store = defineStore({
     id: "'.ucfirst($table["name"]).'",
     state: () => ({

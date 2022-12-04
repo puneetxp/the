@@ -12,7 +12,7 @@ session_start([
  'cookie_samesite' => same_site
 ]);
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/route.php';
+require_once __DIR__ . '/Route/Api.php';
 if (isset($_SESSION)) {
  if (isset($_SESSION['user_id'])) {
   session_regenerate_id();

@@ -1,4 +1,4 @@
-import { useUserStore } from "/js/vue/Store/Model/User.js";
+import { useUserStore } from "/src/Store/Model/User.js";
 
 const link = "/api/user"
 function all() {

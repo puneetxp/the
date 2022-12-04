@@ -1,1 +1,0 @@
-export interface Role{ name:string,enable:number,id:number,created_at:Date,updated_at:Date}

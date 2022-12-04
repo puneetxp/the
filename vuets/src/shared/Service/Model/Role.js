@@ -1,4 +1,4 @@
-import { useRoleStore } from "/js/vue/Store/Model/Role.js";
+import { useRoleStore } from "/src/Store/Model/Role.js";
 
 const link = "/api/role"
 function all() {

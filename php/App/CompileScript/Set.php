@@ -1,6 +1,6 @@
 <?php
 
-$y = fopen(__DIR__.'/../Compile/Component.php', 'w');
+$y = fopen(__DIR__.'/../Compiled/Component.php', 'w');
 $x = "<?php namespace App\Compiled; \n class Component {";
 $dir = __DIR__ . '/../../Resources';
 function folderscan($dir)

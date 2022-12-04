@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate } from "/js/vue/pinia.js";
+import { defineStore, acceptHMRUpdate } from "/cdn/js/pinia.js";
 export const useUserStore = defineStore({
     id: "User",
     state: () => ({

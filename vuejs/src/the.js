@@ -1,4 +1,7 @@
 export const dq = (query) => {
+    return document.querySelector(query);
+}
+export const dqa = (query) => {
     return document.querySelectorAll(query);
 }
 export const FormFetch = (event) => {

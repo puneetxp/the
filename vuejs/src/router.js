@@ -4,14 +4,6 @@ import { auth, notauth } from "/src/guard/auth.js";
 const router = createRouter({
     history: createWebHistory(),
     routes: [{
-        path: '/login',
-        component: () => import("/src/components/pages/login.vue.js"),
-        beforeEnter: [notauth],
-    }, {
-        path: '/register',
-        component: () => import("/src/components/pages/register.vue.js"),
-        beforeEnter: [notauth],
-    }, {
         path: '/logout',
         component: () => import("/src/components/pages/logout.vue.js"),
         beforeEnter: [notauth],
@@ -23,6 +15,14 @@ const router = createRouter({
             component: () => import("/src/components/pages/home.vue.js"),
             name: "Home",
         }, {
+            path: '/login',
+            component: () => import("/src/components/pages/login.vue.js"),
+            beforeEnter: [notauth],
+        }, {
+            path: '/register',
+            component: () => import("/src/components/pages/register.vue.js"),
+            beforeEnter: [notauth],
+        }, {
             path: '',
             children: [
                 {
@@ -31,10 +31,10 @@ const router = createRouter({
                     name: "Product"
                 }]
         }, {
-            path:'/dashboard/',
+            path: '/dashboard/',
             component: () => import("/src/components/pages/dashboard.vue.js"),
             beforeEnter: [auth],
-        },{
+        }, {
             path: '/admin/',
             beforeEnter: [auth],
             children: [{
